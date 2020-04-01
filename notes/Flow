@@ -1,0 +1,209 @@
+
+Mission flow
+
+Start.
+
+No count, as just started. Instead, create PZ mission.
+
+Do PZ, and LZ, now 4 in BZ
+
+
+Do PZ, and LZ, now 4 in BZ
+Do PZ, and LZ, now 4 in BZ
+Do PZ, and LZ, now 4 in BZ
+
+
+Deployment Manager on run:
+["NEW FIRETEAM READY FOR DEPLOYMENT"] execVM "HUD\HUD_messages.sqf";
+LZAPPROACH = false;
+SF_pickup = [dest, 900, 900] call BIS_fnc_findSafePos; 
+waitUntil {	(player distance SF_pickup) <= 750;};
+["SMOKE OUT"] execVM "HUD\HUD_messages.sqf";
+execVM "units\bluforTanoa.sqf";
+waitUntil {	(player distance SF_pickup) <= 250;};
+["LAND ON THE RED SMOKE"] execVM "HUD\HUD_landNow.sqf";
+waitUntil {	(player distance SF_pickup) <= 80;};
+waitUntil { ((RGGATL3) < 3);};
+["TROOPERS ARE BOARDING NOW"] execVM "HUD\HUD_messages.sqf";
+PZAPPROACH = FALSE;
+_units = allUnits inAreaArray "SFPZ";
+{_x assignAsCargo heli2; sleep 1.5;} forEach _units;_units orderGetIn true;
+SF_dropOff = [dest, 650, 650] call BIS_fnc_findSafePos; 
+waitUntil {	(player distance SF_pickup) <= 80;};
+PZAPPROACH = false;
+LZAPPROACH = true;
+waitUntil {	(player distance SF_dropOff) <= 80;};
+_units = fullCrew vehicle player;
+{_x orderGetIn false;} forEach _units;{ unassignVehicle _x } forEach crew heli2;
+["V V V --- LAND NOW --- V V V"] execVM "HUD\HUD_landNow.sqf";
+waitUntil { 	((RGGATL3) < 3);};
+execVM "autoPatrolSystem\attackCheck.sqf";
+LZAPPROACH = false;
+PZAPPROACH = true;
+execVM "autoPatrolSystem\deploymentMgr.sqf";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+pseudo-flows:
+
+deployment.sqf
+
+    message:    PZ Mission Ready 
+    bool        LZAPPROACH = false;
+    create      SF_pickup = [dest, 900, 900]  
+    waitUntil   player distance SF_pickup <= 750
+    message     SMOKE OUT
+    execVM      units\bluforTanoa.sqf
+    waitUntil   player distance SF_pickup <= 250
+    message     LAND ON THE RED SMOKE
+    waitUntil   player distance SF_pickup <= 80
+    waitUntil   RGGATL3 < 3
+    message     TROOPERS ARE BOARDING NOW
+    bool        PZAPPROACH = FALSE
+    count       allUnits inAreaArray SFPZ
+    orderGetIn  allUnits inAreaArray "SFPZ"
+    create      SF_dropOff = [dest, 650, 650] 
+    waitUntil   player distance SF_pickup <= 80
+    bool        PZAPPROACH = false
+    bool        LZAPPROACH = true
+    waitUntil   player distance SF_dropOff <= 80
+    orderGetOut fullCrew vehicle player
+    message     LAND NOW
+    waitUntil   RGGATL3 <3
+    execVM      attackCheck.sqf
+    bool        LZAPPROACH = false
+    bool        PZAPPROACH = true
+    execVM      deploymentMgr.sqf
+
+
+attackCheck:
+
+    if ((RGG_BZbluforCount) <= 16) 
+    then 
+        bool        BLURF = false
+        message     TROOPERS WILL HOLD POSITION HERE
+        message     MISSION STATUS: Deployment
+    else 
+        bool        BLURF = true;
+        message     UNITS MOVING IN TO ATTACK
+        message     MISSION STATUS: ATTACK OBJECTIVE
+
+    if BLURF = true
+    then 
+        execVM      movementManager.sqf
+        systemChat  movementManager initiated
+
+
+movementManager:
+
+    identify    allUnits inAreaArray "Objective"
+                switch      side _x
+                            EAST - do nothing
+                            WEST - random 360 random distance, defend dest
+    identify    allUnits inAreaArray "Objective"
+                switch      side _x
+                            EAST - do nothing
+                            WEST - random 360 random distance, defend dest
+    identify    allUnits inAreaArray "Battlearea";
+                switch      side _x
+                            EAST - random 360 random distance, defend dest
+                            WEST - do nothing
+
+
+autoPatrolSystem flow:
+
+    start = position player;
+    _startPosition = position player;
+    _patrolDestination = [start, 700, 700]
+    dest = _patrolDestination;
+    createMarker    "base", _startPosition
+    createMarker    "BattleArea", _patrolDestination
+    createMarker    "Objective", _patrolDestination
+    createMarker    "Core", _patrolDestination
+    execVM          opforAltis.sqf      
+    while true      if RGG_objOpCount <=2 then
+                    execVM opfor_RF_Spawner.sqf
+                    message WARNING - OPFOR REINFORCEMENTS INBOUND
+
+
+
+24 SEPT 
+MISSION STATES
+
+DEPLOYMENT      GET 4 TEAMS ON THE GROUND AT KEY LOCATIONS, WITHOUT BEING SHOT DOWN BY DEFENDING OPFOR FORCE
+ATTACK          4 TEAMS ATTACK WHILE YOU FLY IN SHOCK TROOPERS CLOSE TO OBJ
+DEFEND          UNITS DIG IN, WHILE YOU FLY IN AT TO INTERCEPT ANY ARMOUR INBOUND
+EXTRACT         YOU TAKE UNITS OUT OF AREA WHILE MORE UNITS MOVE IN FROM ALL DIRECTIONS (USE A TIMER HERE?)
+
+
+28 SEPT
+
+DEPLOYMENT
+WHEN THE PLAYER LANDS IN AN LZ, WE CHECK NUMBERS TO DETERMINE:
+    EXISTING UNITS HOLD POSITION, WE THENPICK UP MORE UNITS 
+    ALL UNITS MOVE IN
+THIS IS DONE USING ATTACKCHECK.SQF
+ATTACKCHECK.SQF IS RUN EVERYTIME WE LAND IN AN LZ
+IF WE HAVE MORE THAN 16 UNITS, MOVEMENTMANAGER.SQF IS TRIGGERED
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,829 @@
+
+done -------------------------------------------------------------------------------------------
+remove or comment out _opCount lines from opforSpawner, to see if anything breaks
+20sept I believe this is done
+
+test with AIC and UAV running
+20sept not done!
+02oct done, works well, easier to see blu assets, it does throw an error from time to time
+
+research cutRSC text and use to remove all systemchat and hints
+20sept so done!
+
+big test: does opforAltis.sqf work..?!
+20sept yep!
+
+separate script to check state if mission will enable HUD changes to PZ or LZ
+highlighting which one is current automatically
+20 sept sorted!
+
+check counts so that fire teams of 4 do not go up aganst a team of 30..
+if numbers are low, set state to MUSTER ... then tha team will not move in until blu 
+numbers are x
+20sept not done
+02oct this is done. Units will now wait until 16 are ready to move in.
+
+if enemy is 30, then you could have two teams of 8 move in. 
+20 sept not done
+02 oct not done. But currently random red LZs are created until 16 units are ready to 
+attack, this works ok.
+
+
+
+------------------------------------------------------------------------------------------------
+
+
+
+partially done ---------------------------------------------------------------------------------
+
+change process
+22 sept
+Write a change process - if I change code, I need to comment this somewhere, and also
+if I have notes about flow, or HUD codes, these need to be updated also.
+02 Oct
+My notes / comments are better, but still do not have a clear model for flow
+
+make initial defenders challenging
+02 oct initial seems fine now they have a technical
+08 oct need to reinstate technical in init defenders
+
+there should be a limiter rule for blufor RF
+e.g. compare blufor and opfor in main AO.. only offer RF if opfor is greater than blufor
+add UAV
+20 sept limiter now implemented to 16 blufor 
+08 oct still no system to control subsequent blufor RF
+
+stand-around-syndrome
+test a low number for assignAsCargo, to see if that is the root cause of 'standAroundSyndrome'
+20sept so resolved!
+02oct so, not 100% resolved, as I still get this when I have 6 units to pickup. 5 seems to work fine.
+
+welcome dialog 
+.. where to start, how many units (performance helper), damage or no damage?
+20 sept not done, but I think this could have a training mode and game mode
+02 oct basic welcome dialog done, its not great but might allow better future versions
+
+Mission Progression (States, Rules etc)
+decide how to stage progression ... time based or number based?
+20 sept game mode being explored, but may need to add time to equasion also
+02 oct no progress. I would like to have a config dialog on mission start.
+here, player can see info about the mission, and set difficulty levels.
+08 oct I now have 5 stages (deploy, attack, defend, support and extract)
+more refinement is needed on this, and currently no extract rules!
+
+create ambient FOB vehciles and troops, and delete when you are not near
+20sept not done
+
+create static fob (tents etc)
+20sept not done
+08 oct - FOB is now created, but is static for the mission 
+
+------------------------------------------------------------------------------------------------
+
+
+
+to do ------------------------------------------------------------------------------------------
+
+Score System
+how to keep score of KDR? linked to CUTRSC
+20 sept not done
+02 oct no counter still
+08 oct nope
+
+Dynamic (flashing) Markers
+20sept not done
+02oct no progress
+
+count passengers when in air, and check assigned spaces with no. of passengres
+if no passengers, but assigned places, unassign places
+20 sept not done
+02 oct no progress
+08 oct nope
+
+need some flares!!
+20 sept not done
+02 oct no progress
+08 oct nope
+
+by having different unit gen scripts, you can use switch to allow user to choose 
+flavour of blu and opfor units
+20 sept not done
+02 oct still not done, can be a config item?
+08 oct nope
+
+ATTATCHTO - GPMG TO MH6 BENCHES
+20 sept not done
+02 oct not done
+08 oct nope
+
+setcaptive player if flying under x ..
+i.e. if you can get to BZ under x atl, you can surpsrise the enemy
+this will help when more advanced armoured vics arrive on-scene 
+
+easy arty .. can your look pos show the map coords? If so, you look, and call 
+in arty with no dialog box
+
+can i count ferried units and track how many are alive when I leave?
+
+when dropping off units, create a temp marker around player, so that instead of 
+moving all units in BZ, you only affect a small group around the player heli
+
+02oct 
+new display for timer 
+set fuel to always on
+create new fuel countdown timer
+set fuel of off when timer runs out
+
+have ability to 'mark' a location using voice, and show in HUD.. 
+keydown = getPos showPos .. use POS for arty?
+
+make it so that the LAND NOW message appears ALWAYS while over LZ, and removes when not over LZ... make it easier for players to know the LZ without smoke
+
+
+
+------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------
+draft mission logic
+
+original idea
+mission starts ... you pick up 4, you deploy them at a good LZ. 
+You then need to get another 4, and bring to the same LZ.
+8 at LZ 1. 
+Next pick up another 4, and choose another LZ, and as before, 
+they wait until another 4 is added.
+When 16 are on ground, they move in automatically...
+your job is to scout the outer AO for good LZ locations.
+
+02oct update
+Deployment:
+You pick up teams of 5 at PZs close to the area of operations
+Units will board automatically when you land
+PZs are marked with red smoke
+On pickup, you'll be given an LZ location to deploy the team
+Be aware, there is some limited 50cal on the ground, so stay low where you can
+If a tech spots you, it will close in, so keep your speed up also
+
+Attack:
+Once you have enough units on the ground, they move in to attack the objective 
+automatically
+When Attack is in progress, reinforcements are more limited, 2 per pickup and 
+further out (for balance)
+However, when attack is in progress you can deploy these pairs anywhere in the 
+main AO (blue zone)
+
+Defend:
+If the attack team removes the opfor defenders, they take up defensive positions 
+and prepare to repell opfor RF
+Opfor RF currently runs on a loop, so you'll need to work hard to keep the in-field 
+objective supplied with fresh units
+q - can I automate the collection of dead blu units for extraction?
+During this stage, there may be armour incoming, so ensure there are adequate AT 
+assets in-field. 
+Watch your approaches also.
+
+Extract:
+Once you have held the location for 30 minutes, it is time to extract. You are 
+required to remove all live blufor units
+extraction will be in groups, and during this phase, BF will automatically group 
+in flat areas for extraction on blue smoke
+Currently, during extraction, no opfor will attack, but this can be changed of course.
+
+
+mission start
+
+state: phase1 = true
+
+task:
+no blufor in BZ = no marker for LZ ... you can choose anywhere in the region 
+go and pickup 4 units, drop them anywhere in BZ.. once away phase1 = false
+
+
+if phase1 = false (ie completed) then phase2 = true
+
+task:
+once <= 4 blfor on ground in BZ = set LZ marker as your current landing pos, go and 
+get 4 more and bring back to this new LZ
+once delivered, once away phase 2 = false (completed)
+
+now you have 8 units holding at the edge of the BZ
+
+(notes: while this is going on, numbers are updated in HUD, but also add their holding 
+state = holding or move in)
+
+once phase 2 = false, then phase 3 = true 
+
+if phase 3 = true, then mission is to pick up 4 new units, and deploy them anywhere in 
+the BZ 
+This can be the same location as before, or different 
+once deployed phase 3 = false and phsae 4 = true ..
+
+if phase 4 = true, then go and pick up final 4 units, and bring them back to the phase 
+3 LZ 
+once last 4 deployed, then phase 4 = false 
+
+if phase 4 = false, then attack = true 
+if attack = true, then all blufor units set behaviour to combat and move in simultaneously 
+drectly to core obj. 
+
+note - can the core obj we want to take be a point of interest? 
+
+if opfor units are <= 2, then attack = false and defend = true 
+if defend = true, then all blufor go 360 dfence 
+
+
+
+
+
+if defend = true, then send in opfor RF
+
+if defend = true and opfor <= 2 then success = true 
+if success = true then show well done image 
+then you need to move all remaining units to the next BZ x km away and start this all again.
+if defend = true and blufor = 0 then mission ends with failure message
+fade to black with text that uses player name and mission location in the text narritive
+
+additional idea .. if defend = true and blufor <= 6 then you can extract them by flying 
+and landing near them.. they will jump in for escape..
+6 means that there could be a final extraction of 1 or 2 units ... 
+if that happens ... medal screen :)
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+once initial attack force of 16 has been deployed, a trigger is set so that a new RF mission is created immediately
+so you can stock up on 4 new units as the attack starts. once mission state ATTACK = TRUE then you can drop RF anywhere in the BZ and they will move in
+but, the RF limit is then set ... if BZ blufor >= 20, no more opfor RF allowed until blufor numbers are <= 16.. cycle this every 30 seconds ... once blufor numbers 
+i can do this now..
+every second check blufor in BZ .. if <= then create PZ mission. if > 16, do nothing.
+AND in mission intel, have line to say "Reinforcements avaiable" or "no rf currently in area".
+
+
+
+
+once all units on ground what can you do?
+you can fly and drop yellow smoke. the playerpos atpoint of drop = arty.sqf
+create some random HE hits on the area.
+state availability in mission intel "artillery strike availbale"
+
+
+
+20sept
+made a start on this
+now the mission creates a specific LZ and triggers alerts when you are near
+it also limits blufor to 16, so if 16 are alive, no more should be created
+I guess as soon as one dies, more will be available..
+I removed debugging cutRsc messages
+
+add time (mission time)
+
+add 10 digit location
+20 sept DONE
+
+
+21sept
+need a line of instructions at base of screen
+mission state
+current instruction
+
+land now is a small addition! not a message!
+HAVE DIST TO EDGE OF LANDING ZONE UNDERNEATH TO SHOW HOW MUCH SPACE LEFT TO LAND
+
+
+create dialog to allow player to specify size of mission area.
+Always have PZ as within outer edge of BZ
+so PZ - BZ radius - 80 or something
+
+Spend time thinking about how a training mssion would compare to a real mission
+so, unlimited health, unlimted units, etc
+
+build a flow so that when state is ATTACK, and new units are created, in that event you can land anywhere in BZ
+
+
+
+
+
+23sept
+tested last night, and the mission was very enjoyable.
+having AT to bring in assed a new element to the gameplay.. it was OP however
+next time, try one AT at a time.
+Also, i gen'd 6 per PZ, but only 5 only ever got on . always one waited behind. 
+So, try with 1 AT, this may just fix the issue.
+
+Base = gen + AT pickup
+
+I need to create a DEFEND state..
+
+Once DEFEND, then you should be able to drop off units anywhere in the BZ, and they will move in. That way, you can position them befind theenemy and they will
+attack enemy from behind.
+
+I need to mark how many vehicles are in the BZ, in the HUD
+I need to limt PZ creations .. 
+I need to create small zones so that when you land at your base, you can land near x y or z and different uits jump abourd.
+
+so if land next to basePZ1 you get 1 or 2 AT, basePZ2 = medics, basePZ3 = FR, PZ4 = HMGs 
+
+so the flow seems to be:
+
+Deployment
+visit local PZs, and bring 4 teams into position around the target
+
+Attack
+when they move in, you can continue to pick up as normal, but can deploy anywhere in the BZ 
+(limits apply)
+
+Defend
+when defending you job is to extract any injured, and bring back in (from your base) any additional troops
+When bringing in new units, they can be deployed anywhere in the BZ, either at Core, or on outskirts
+
+todo - make so that if I land within 25m of units, the 6 nearest jump aboard. This way, I can take units at Core and pos them elsewhere
+todo - create a score system to track how many units have been created for the mission - this is the mission cost.
+So, track both units created as well as units lost. Also count units extracted and brought back to base..
+
+todo - decide how to progress the mission.
+So, deployment ok, attack ok, and defend against a single column ok. when all units removed, what then?
+I think we create a new core somewhere else.. however befre BAU PZ rules apply, you need to extract all injured to BAse
+You then have to use all remaining uits at first core.
+
+todo - create new box at bottom of screen to track opfor numbers and their status - defend, attack. 
+
+todo, cn I have a high level map view, that can be toggles on/off that is always BHOT that can show the BZ?
+
+
+
+
+
+
+
+
+
+
+injurinoes = units in core && dammage >= 8;
+
+get in order 
+_x
+forEach injurinoes;
+
+
+
+
+
+
+Friday 28 September
+Objective: Make Medevac function work
+tasks:  properly ID all blu units that have damage
+        send those units to a location
+        instruct player to extract via HUD
+
+Objective 2: Manage passengers 
+tasks:  ID all current passengers on heli 
+        show this in HUD
+
+
+lesson with Eva and same
+
+what is a variable?for 
+
+example 
+
+bunnykins = 7; 
+sammy = 7; 
+bunnykins + sammy = 14;
+
+what is an array? is simply a list.
+[apples, oranges, pears, lemons, pancakes];
+    0       1        2      3       4   
+
+
+
+
+int, float, bool?
+// int = a whole number
+// float = a number with a decimal point, like 6.3, 14.88. 0.88338
+// bool = true or false (bool is short for boolean)
+
+//9876543210 1- 2- 3- 4- 5-
+
+
+
+if then 
+
+while do
+
+x y coords
+
+
+old medevac notes:
+
+/*
+	// move injured to evac-ready position
+	_readyInjured = allUnits inAreaArray "Core";
+	{
+		_inj = getDammage _x;
+		if ((_inj) >= _damageTrigger) then {
+			_Dir = random 360;
+			_Dist = 10; 
+			_medEvacPos = dest getPos [_Dist, _Dir]; 
+			_x doMove _medEvacPos;
+		};
+	} forEach _readyInjured;
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+// 28sept moved into here, needs to run on a loop, and not on a landing trigger
+
+// 28sept i will be amazed if this is close to being correct!
+// I am going for a system that enables injured units to be extracted,but only alerts the player/pilot when needed
+/*
+while {true} do {
+
+	_damageTrigger = 0.4; // change this value to set what constitutes an evac-worthy injury level
+
+	// move injured from front line to inner core (DEST)
+	_checkInjured = allUnits inAreaArray "BattleArea";
+	{
+		_inj = getDammage _x;
+		if ((_inj) >= _damageTrigger) then 
+		{_x doMove DEST};
+	} forEach _checkInjured;
+
+	sleep 0.5;
+
+	// move injured to evac-ready position
+	_readyInjured = allUnits inAreaArray "Core";
+	{
+		_inj = getDammage _x;
+		if ((_inj) >= _damageTrigger) then {
+			_Dir = random 360;
+			_Dist = 10; 
+			_medEvacPos = dest getPos [_Dist, _Dir]; 
+			_x doMove _medEvacPos;
+		};
+	} forEach _readyInjured;
+/*
+	// trigger to create smoke and load injured units -----------------------------------------------------
+	if ((player distance dest) <= 20) then { 
+		if ((RGGATL3) < 1) then {
+			["INJURED ARE BOARDING NOW"] execVM "HUD\HUD_messages.sqf";
+			PZAPPROACH = false;
+			LZAPPROACH = false;
+			MEDEVAC = true;
+			// delete any PZLZ markers now?
+*/
+*/
+/*
+			_units = allUnits inAreaArray "CORE";
+			{
+				_x assignAsCargo heli2;
+				sleep 0.25;
+			} forEach _units;	
+
+			_units orderGetIn true;
+
+			sleep 1;
+		};
+	*/	
+
+	/*
+		waitUntil 
+		{
+			(player distance RGG_basePos) <= 80;
+		};
+
+		// pop smoke at 80m from med-base
+		_smoke = createVehicle ["G_40mm_smokeGREEN", getMarkerPos "BASE", [], 0, "none"];
+
+		_units = fullCrew vehicle player;
+		{
+			_x orderGetIn false;
+		} forEach _units;	
+
+		{ unassignVehicle _x } forEach crew heli2;
+
+		MEDEVAC = false;
+
+		// end of 20m medevac check
+	};
+*/
+
+	// initial green smoke at core -------------------------------------------------------------------------------
+	//while {MEDEVAC} do {
+	
+	/*
+	//if ((MEDEVAC) = false) then {
+		if ((player distance dest) <= 100) then { 
+			if ((RGG_injuredCount) >= 1) then {
+				_smoke = createVehicle ["G_40mm_smokeGREEN", getMarkerPos "CORE", [], 0, "none"];
+				["MEDEVAC ON GREEN SMOKE"] execVM "HUD\HUD_messages.sqf";
+				sleep 25; // will repeat untl medevac = true, so land quick to avoid smokeytown
+			};
+		};
+	//};
+
+	sleep 5;
+
+
+};
+
+// does standaboutandnotboard syndrome relate to sleeps? and due to sleeps,seats get double booked leading to inaction?	
+// if this reoccurs can you re-run for standing units only, to reallocate a new seat?
+		
+
+/*
+wait until player is in core..
+then if in core and <= 3m alt, then trigger message MEDEVAC!!!
+also state is MEDEVAC true
+
+if medevac true then injured board 
+pilot takes then to base 
+
+use PZLZ methods to manage approach and getout commands
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+_RGGevacUnits = allUnits inAreaArray "Core";
+{
+	_x assignAsCargo heli2;
+	sleep 1.5;
+} forEach _RGGevacUnits;	
+_RGGevacUnits orderGetIn true;
+
+
+/*
+	_inj = getDammage _x
+	//_medEvacPos = getMarkerPos "core";
+	if ((_inj) >= 4) then {
+		//_Dir = random 360;
+		//_Dist = 10; 
+		//_medEvacPos = dest getPos [_Dist,_Dir]; 
+		//_x doMove _medEvacPos;
+		_x doMove Dest;
+} forEach _checkInjured;
+*/
+
+
+/*
+// can try wait unitl of while true with sleep...
+
+// waituntil:
+_RGGplayerPos = getPosATL player;
+_RGGplayerAlt = _RGGplayerPos select 2;
+waitUntil { 
+	((player distance getMarkerPos "core") <= 25) && ((_RGGplayerAlt) <= 3);
+};
+systemChat "debug --- player is over Core and has landed ok!";
+BLUFOR_EVAC = true;
+
+
+
+if (BLUFOR_EVAC) then {
+
+	_RGGevacUnits = allUnits inAreaArray "Core";
+	{
+		_x assignAsCargo heli2;
+		sleep 1.5;
+	} forEach _RGGevacUnits;	
+	_RGGevacUnits orderGetIn true;
+	sleep 10;
+};
+
+
+
+
+
+
+
+/*
+// check if player has left core area --------------------------------
+waitUntil {
+	((player distance getMarkerPos "core") > 25);
+};
+systemChat "debug --- player has left Core";
+BLUFOR_EVAC = false;
+sleep 1;
+systemChat "get injured to med station ASAP";
+
+// see if the above works before you go any further with it.
+
+
+
+/*
+example that I know works
+// need && here!!
+			if ((_heliAz >=0) && (_heliAz <179)) then
+			{
+				revAZ = _heliAZ + 180;
+			} else
+			{
+				revAZ = _heliAZ - 180;
+			};
+*/
+
+
+
+
+
+/*
+// 17sept below here is what I had before today which does not work .. above is the new idea
+
+// auto-moves injured units onto heli ----------------------------------------------------------------------
+
+// check - is heli landed on ground
+// check - count units 20m radius from player
+// check and place in array all injured units
+// move all injured units onto heli
+// heli moves to medevac base (needs to be static, and nearby)
+// injured disembark when lands at medevac
+// do something useful with these
+// script a random pckup rtigger..?
+
+// check if player is over core area -----------------------------------------------
+waitUntil {
+	((player distance getMarkerPos "core") <= 25);
+};
+systemChat "debug --- player is over Core?";
+evac = true;
+
+
+
+// check if player has landed -------------------------------------------------------
+waitUntil {
+	_RGGplayerPos = getPosATL player;
+	_RGGplayerAlt = _RGGplayerPos select 2;
+	((_RGGplayerAlt) <= 3);
+};
+systemChat "debug --- player has landed at Core?";
+land = true;
+
+if {land} then {
+
+	_RGGevacUnits = allUnits inAreaArray "Core";
+	{
+		_x assignAsCargo heli2;
+		sleep 1.5;
+	} forEach _RGGevacUnits;	
+	_RGGevacUnits orderGetIn true;
+	sleep 10;
+
+};
+
+// check if player has left core area --------------------------------
+waitUntil {
+	((player distance getMarkerPos "core") > 25);
+};
+systemChat "debug --- player has left Core";
+evac = false;
+sleep 1;
+systemChat "get injured to med station ASAP";
+
+
+// marker creation ------------------------------------------------
+createmarkerlocal "medical";
+_medicalDest = [dest, 900, 950] call BIS_fnc_findSafePos; 
+_medicBase = createMarkerLocal ["medical", _medicalDest];
+_medicBase setMarkerShapeLocal "ELLIPSE";
+_medicBase setMarkerColorLocal "ColorGreen";
+_medicBase setMarkerSizeLocal [50, 50];
+_medicBase setMarkerAlphaLocal 0.9;
+// icon??
+
+
+
+
+
+// unit and asset creation --------------------------------------------
+//create medical truck plus units guarding
+
+
+// delivery --------------------------------------------------------
+
+//wait until player is in "medical" and landed ok
+
+// exfil ---------------------------------------------------
+
+waitUntil 
+{
+	((player distance getMarkerPos "medical") <= 50);
+	systemChat "well done, injured have been moved, have some points ...";
+
+// cleanup ---------------------------------------------------------
+waitUntil 
+{
+	((player distance getMarkerPos "medical") <= 500);
+};
+
+//delete allVehicles within 50m of "medical"
+deleteMarkerlocal "medical";
+systemChat "debug --- medical mission completed, all assets removed";
+
+// what next here? Run another balance check?
+
+
+// end of medevac notes
+
+
+
+
+CONFIG DIALOG
+
+what player options?
+
+Do you want invunerabiity turned on or off?
+
+When deploying troops before the main attack, do you want to select LZs, or be given them by central command?
+This would need a new message. I.e. if you can deploy anywhere then tell pilot "better choose a good position"
+
+Do you want to have opfor RF always arrive as one group, two, three? Do you want attacks to be random or in a group?
+If a group, do you want always one group, always two, always three, escalate from one to three or random?
+
+How many waves before area is secured?
+
+Dialog plan, two choices: damage on/off? and: deploy anywhere, or at set LZs?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

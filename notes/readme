@@ -1,0 +1,62 @@
+
+Welcome to RDS - Rapid Deployment Simulator
+
+The aim of this mission is to provide a system to improve:
+
+    * map reading
+        *heading familiarity
+    * general piloting
+        *landing
+        *takeoffs
+        *NAP
+
+Mission is broken down into key stages:
+
+    * Deploy 
+        * pickup and then dropoff fire teams at key locations around the main objective
+    * Attack
+        * when enough units are on the ground, they will attack the objective automatically
+    * Defend
+        * when units have taken objective, they dig in and prepare to repell more opfor attackers
+    * Support
+        * when opfor are attacking your job is then to keep the flow of units on the battlefield vai heli-drop 
+    * Extract
+        * when all opfor waves have been repelled, you are to extract all remaining units, back to the FOB
+
+Deploy State
+Here you essentially follow the HUD instructions. You have a PZ and an LZ guidance system, that will show you both
+direction and distance to your next objective. Your actual objective (Pick up or drop off) will be marked by a white
+bar in the HUD, above the relevant marker. You will pick up and drop off appx 20 units, deploying them an the red 
+map markers. While the HUD can guide your progress without any map interaction, having GPS on-screen can be very helpful.
+Once all units have been deployed, they move to Attack State.
+
+Attack State
+Currently there are no tasks during this state, and you are to await successful (or otherwise) results in taking the
+objective from initial defence forces. Once the objective has been taken, you move into Defend State.
+
+Defend State
+During this part of the mission, you are to pick up and then deploy at the core objective a team of AT Specialists. 
+These units are needed to repell the incoming enemy armour. Again, the HUD will guide you to both the pickup and the LZ.
+
+Support State
+Once AT have been deployed, the enemy will begin their attack. Now you are able to pick up small units from the 
+outskirts of the main battle area. As before, the HUD will guide you to their pickup location, however you are now able
+to deploy them at any location within the marked battle area. It is suggested to place them in flanking positions to
+engage attacking forces. This constitutes the main battle event, and will run for three increasingly difficult enemy
+attacks. After three attacks have been (hopefuly) successfully repelled, you move into Extract State.
+
+Extract State
+now your task is simply to exfil any remaining units to the nearest FOB. There may be additional attacks inbound, so 
+speed will be relevant here. Simply fly to the Core Objective, land, and units will board automatically. Once onboard,
+deploy them at the FOB/Med-Base, and repeat the process until all friendlies are safely extracted. 
+
+Mission Duration (for all above states) is appx 45 minutes.
+
+I hope you enjoy the experience!
+
+Cheers
+Reggaeman
+
+
+
+

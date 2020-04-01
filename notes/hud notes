@@ -1,0 +1,140 @@
+
+18Sept
+mission development has been based around one single HUD to do everything
+this may not work as different elements have different functions and frequency requirements
+e.g. speed needs to cycle at 0.1, whereas mission intel is relatively static, and will show 
+a static message on screen
+also, intel messages are temporary, avionics are always on (currently).
+A middleground might be wayfinding, which will help the pilot head in the right direction - 
+this could have a 1 second cycle 
+so to start with I will try this with one dialogs.hpp file, but I may need multiple .hpps 
+for this.
+
+
+
+20sept hud now split into the following modules:
+avionics [speed height heading]
+intel [troop numbers]
+land now [specific land message] (added 21sept)
+messages [nicer systemchat]
+mission states [used for debugging]
+warnings [alert when going too fast]
+wayfinder [dynamic PZ LZ heading distance and 10 digit grid]
+
+so I assume I only need one .hpp, and can manage this with multiple sqf instruction files
+
+
+22sept - this needs to be revised!
+this is the current list:
+
+// speed
+50 cutRsc ["SPEEDINKNOTTS", "PLAIN"]; // words
+60 cutRsc ["SPEEDINKNOTTSVALUE", "PLAIN"]; // numbers
+
+// height
+80 cutRsc ["ALTX2", "PLAIN"]; // words
+90 cutRsc ["ALTX2VALUE", "PLAIN"]; // numbers
+91 cutRsc ["ASLX2VALUE", "PLAIN"]; // numbers
+
+// heading
+400 cutRsc ["AZIMUTH", "PLAIN"]; // words
+410 cutRsc ["AZIMUTHVALUE", "PLAIN"]; // numbers
+430 cutRsc ["REVERSEAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// PZ heading
+500 cutRsc ["PZAZIMUTH", "PLAIN"]; // words
+510 cutRsc ["PZAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// LZ heading
+520 cutRsc ["LZAZIMUTH", "PLAIN"]; // words
+530 cutRsc ["LZAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// PZ distance
+610 cutRsc ["PZDISTANCEVALUE", "PLAIN"]; // numbers
+
+// LZ distance
+630 cutRsc ["LZDISTANCEVALUE", "PLAIN"]; // numbers
+
+// debug
+710 cutRsc ["OBJUNITS", "PLAIN"];
+
+// warning
+1000 cutRsc ["PZ_SLOW", "PLAIN"];
+
+// universal destination (toggles between PZ and LZ dynamically - used for VHI visual heading indicator)
+//18SEPT TODO MAKE THIS WORK
+1100 cutRsc ["UNIDEST", "PLAIN"];
+
+// mission data 
+1200 cutRsc ["MISSIONDATA", "PLAIN"];
+//18SEPT TODO INVESTIGATE HOW TO MAKE TEXT APPEAR HERE AT DIFF STAGES OF MISSION
+
+// script loading instruction -------------------------------------------------------------------------
+waitUntil {!isNull (uiNameSpace getVariable "SPEEDINKNOTTS")};
+
+
+
+breakdown:
+-------------------------------------------------------------------------
+HUD_avionics
+
+// speed
+100 cutRsc ["SPEEDINKNOTTS", "PLAIN"]; // words
+110 cutRsc ["SPEEDINKNOTTSVALUE", "PLAIN"]; // numbers
+
+// height
+120 cutRsc ["ALTX2", "PLAIN"]; // words
+130 cutRsc ["ALTX2VALUE", "PLAIN"]; // numbers
+140 cutRsc ["ASLX2VALUE", "PLAIN"]; // numbers
+
+// heading
+150 cutRsc ["AZIMUTH", "PLAIN"]; // words
+160 cutRsc ["AZIMUTHVALUE", "PLAIN"]; // numbers
+170 cutRsc ["REVERSEAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// PZ heading
+180 cutRsc ["PZAZIMUTH", "PLAIN"]; // words
+190 cutRsc ["PZAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// LZ heading
+200 cutRsc ["LZAZIMUTH", "PLAIN"]; // words
+210 cutRsc ["LZAZIMUTHVALUE", "PLAIN"]; // numbers
+
+// PZ distance
+220 cutRsc ["PZDISTANCEVALUE", "PLAIN"]; // numbers
+
+// LZ distance
+230 cutRsc ["LZDISTANCEVALUE", "PLAIN"]; // numbers
+
+-------------------------------------------------------------------------
+HUD_intel
+
+// debug
+300 cutRsc ["OBJUNITS", "PLAIN"];
+
+// mission data 
+310 cutRsc ["MISSIONDATA", "PLAIN"];
+//18SEPT TODO INVESTIGATE HOW TO MAKE TEXT APPEAR HERE AT DIFF STAGES OF MISSION
+
+-------------------------------------------------------------------------
+HUD_warnings
+
+// warning
+400 cutRsc ["PZ_SLOW", "PLAIN"];
+
+-------------------------------------------------------------------------
+HUD_wayfinder
+// universal destination (toggles between PZ and LZ dynamically - used for VHI visual heading indicator)
+//18SEPT TODO MAKE THIS WORK
+500 cutRsc ["UNIDEST", "PLAIN"];
+
+-------------------------------------------------------------------------
+
+
+
+
+// script loading instruction -------------------------------------------------------------------------
+waitUntil {!isNull (uiNameSpace getVariable "SPEEDINKNOTTS")};
+
+
+
